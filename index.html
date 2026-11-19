@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="GymTrack" />
+  <title>GymTrack — Diario Palestra</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #141923;
+      --surface-2: #1c2331;
+      --border: #283246;
+      --text: #f3f6fb;
+      --muted: #93a0b8;
+      --accent: #3b82f6;
+      --accent-2: #22c55e;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 92px;
+      line-height: 1.4;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 14, 20, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 10px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .routine-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0 4px;
+      scrollbar-width: none;
+    }
+    .routine-tabs::-webkit-scrollbar { display: none; }
+
+    .tab {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    main {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ex-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .ex-target {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .icon-btn {
+      background: var(--surface-2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .set-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .set-badge {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--surface-2);
+      padding: 10px 0;
+      border-radius: 10px;
+    }
+
+    .step-box {
+      display: flex;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .step-btn {
+      width: 34px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .step-val {
+      flex: 1;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 700;
+      min-width: 0;
+    }
+
+    .step-unit {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: block;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .done-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .done-btn.done {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #06210f;
+    }
+
+    .ex-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #06210f;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* Timer bar */
+    .timer-bar {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 30;
+      background: #182235;
+      border: 1px solid #3b82f6;
+      border-radius: 18px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    }
+
+    .timer-time {
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-btn {
+      padding: 8px 11px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 10px 0 4px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .history-item {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 0;
+      font-size: 0.86rem;
+    }
+    .history-item:last-child { border-bottom: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="top-row">
+      <div>
+        <h1>GymTrack</h1>
+        <div class="subtitle" id="dateLabel"></div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="icon-btn" onclick="openHistory()">Storico</button>
+        <button class="icon-btn" onclick="openNewRoutineModal()">+ Scheda</button>
+        <button class="icon-btn" onclick="openBackupModal()">Backup</button>
+      </div>
+    </div>
+    <div class="routine-tabs" id="routineTabs"></div>
+  </header>
+
+  <main id="workoutContainer"></main>
+
+  <div class="timer-bar">
+    <div>
+      <div style="font-size:0.72rem; color:#93c5fd; font-weight:600;">RECUPERO</div>
+      <div class="timer-time" id="timerDisplay">01:30</div>
+    </div>
+    <div class="timer-controls">
+      <button class="mini-btn" onclick="adjustTimer(-15)">-15s</button>
+      <button class="mini-btn" onclick="adjustTimer(15)">+15s</button>
+      <button class="mini-btn" id="timerToggleBtn" onclick="toggleTimer()">Avvia</button>
+      <button class="mini-btn" onclick="resetTimer(90)">Reset</button>
+    </div>
+  </div>
+
+  <!-- Modal Nuovo Esercizio -->
+  <div class="modal-backdrop" id="exModal">
+    <div class="modal">
+      <h3 style="margin:0 0 8px;">Nuovo esercizio</h3>
+      <label>Nome esercizio</label>
+      <input type="text" id="newExName" placeholder="Es. Panca piana manubri" />
+      <label>Target / Note (opzionale)</label>
+      <input type="text" id="newExTarget" placeholder="Es. 3x8-10 · 90s recupero" />
+      <label>Numero serie iniziali</label>
+      <input type="number" id="newExSets" value="3" min="1" max="10" />
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn" onclick="closeModal('exModal')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveNewExercise()">Aggiungi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nuova Scheda -->
+  <div class="modal-backdrop" id="routineModal">
+    <div class="modal">
+      <h3 style="margin:0 0 8px;">Nuova scheda</h3>
+      <label>Nome scheda (es. Giorno A - Spinta)</label>
+      <input type="text" id="newRoutineName" placeholder="Es. Giorno A - Spinta" />
+      <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn" onclick="closeModal('routineModal')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveNewRoutine()">Crea scheda</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Storico -->
+  <div class="modal-backdrop" id="historyModal">
+    <div class="modal">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">Storico allenamenti</h3>
+        <button class="icon-btn" onclick="closeModal('historyModal')">Chiudi</button>
+      </div>
+      <div id="historyList" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Modal Backup -->
+  <div class="modal-backdrop" id="backupModal">
+    <div class="modal">
+      <h3 style="margin:0 0 8px;">Backup dati</h3>
+      <p style="font-size:0.84rem; color:var(--muted); margin:0 0 8px;">
+        Copia questo testo per salvare i tuoi dati altrove, oppure incolla un backup precedente per ripristinarlo.
+      </p>
+      <textarea id="backupText" rows="7"></textarea>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button class="btn" onclick="copyBackup()">Copia</button>
+        <button class="btn btn-primary" onclick="restoreBackup()">Ripristina</button>
+      </div>
+      <button class="btn" style="margin-top:8px;" onclick="closeModal('backupModal')">Chiudi</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "gymtrack_ios_v1";
+
+    const defaultData = {
+      activeRoutineId: "r1",
+      routines: [
+        {
+          id: "r1",
+          name: "Giorno 1 · Spinta",
+          exercises: [
+            {
+              id: "e1",
+              name: "Panca piana",
+              target: "4x6-8 · 2' recupero",
+              sets: [
+                { kg: 60, reps: 8, done: false },
+                { kg: 60, reps: 8, done: false },
+                { kg: 60, reps: 7, done: false },
+                { kg: 55, reps: 8, done: false }
+              ]
+            },
+            {
+              id: "e2",
+              name: "Lento avanti",
+              target: "3x8-10 · 90s recupero",
+              sets: [
+                { kg: 30, reps: 10, done: false },
+                { kg: 30, reps: 9, done: false },
+                { kg: 30, reps: 8, done: false }
+              ]
+            }
+          ]
+        },
+        {
+          id: "r2",
+          name: "Giorno 2 · Tirata",
+          exercises: [
+            {
+              id: "e3",
+              name: "Lat machine / Trazioni",
+              target: "3x8-12 · 90s recupero",
+              sets: [
+                { kg: 55, reps: 10, done: false },
+                { kg: 55, reps: 9, done: false },
+                { kg: 50, reps: 10, done: false }
+              ]
+            }
+          ]
+        },
+        {
+          id: "r3",
+          name: "Giorno 3 · Gambe",
+          exercises: [
+            {
+              id: "e4",
+              name: "Squat / Leg Press",
+              target: "4x8-10 · 2' recupero",
+              sets: [
+                { kg: 80, reps: 10, done: false },
+                { kg: 80, reps: 10, done: false },
+                { kg: 80, reps: 9, done: false },
+                { kg: 80, reps: 8, done: false }
+              ]
+            }
+          ]
+        }
+      ],
+      history: []
+    };
+
+    let state = loadState();
+    let timerSeconds = 90;
+    let timerInterval = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultData);
+        return JSON.parse(raw);
+      } catch {
+        return structuredClone(defaultData);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getActiveRoutine() {
+      return state.routines.find(r => r.id === state.activeRoutineId) || state.routines[0];
+    }
+
+    function render() {
+      const now = new Date();
+      document.getElementById("dateLabel").textContent = now.toLocaleDateString("it-IT", {
+        weekday: "long", day: "numeric", month: "long"
+      });
+
+      const tabsEl = document.getElementById("routineTabs");
+      tabsEl.innerHTML = "";
+      state.routines.forEach(r => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (r.id === getActiveRoutine().id ? " active" : "");
+        btn.textContent = r.name;
+        btn.onclick = () => {
+          state.activeRoutineId = r.id;
+          saveState();
+          render();
+        };
+        tabsEl.appendChild(btn);
+      });
+
+      const container = document.getElementById("workoutContainer");
+      container.innerHTML = "";
+      const routine = getActiveRoutine();
+
+      routine.exercises.forEach((ex, exIdx) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let setsHtml = "";
+        ex.sets.forEach((s, sIdx) => {
+          setsHtml += `
+            <div class="set-row">
+              <div class="set-badge">${sIdx + 1}</div>
+              <div class="step-box">
+                <button class="step-btn" onclick="changeVal(${exIdx}, ${sIdx}, 'kg', -2.5)">-</button>
+                <div class="step-val">${s.kg}<span class="step-unit">kg</span></div>
+                <button class="step-btn" onclick="changeVal(${exIdx}, ${sIdx}, 'kg', 2.5)">+</button>
+              </div>
+              <div class="step-box">
+                <button class="step-btn" onclick="changeVal(${exIdx}, ${sIdx}, 'reps', -1)">-</button>
+                <div class="step-val">${s.reps}<span class="step-unit">rip</span></div>
+                <button class="step-btn" onclick="changeVal(${exIdx}, ${sIdx}, 'reps', 1)">+</button>
+              </div>
+              <button class="done-btn ${s.done ? "done" : ""}" onclick="toggleDone(${exIdx}, ${sIdx})">✓</button>
+            </div>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="ex-header">
+            <div>
+              <h3 class="ex-name">${escapeHtml(ex.name)}</h3>
+              <div class="ex-target">${escapeHtml(ex.target || "")}</div>
+            </div>
+            <button class="icon-btn" onclick="deleteExercise(${exIdx})">Elimina</button>
+          </div>
+          ${setsHtml}
+          <div class="ex-actions">
+            <button class="btn" onclick="addSet(${exIdx})">+ Serie</button>
+            ${ex.sets.length > 1 ? `<button class="btn" onclick="removeLastSet(${exIdx})">- Serie</button>` : ""}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      const addExBtn = document.createElement("button");
+      addExBtn.className = "btn btn-primary";
+      addExBtn.textContent = "+ Aggiungi esercizio";
+      addExBtn.onclick = () => {
+        document.getElementById("newExName").value = "";
+        document.getElementById("newExTarget").value = "";
+        document.getElementById("newExSets").value = "3";
+        document.getElementById("exModal").classList.add("open");
+      };
+      container.appendChild(addExBtn);
+
+      if (routine.exercises.length > 0) {
+        const finishBtn = document.createElement("button");
+        finishBtn.className = "btn btn-success";
+        finishBtn.textContent = "Salva allenamento nello storico";
+        finishBtn.onclick = saveWorkoutToHistory;
+        container.appendChild(finishBtn);
+      }
+    }
+
+    function changeVal(exIdx, sIdx, field, delta) {
+      const set = getActiveRoutine().exercises[exIdx].sets[sIdx];
+      const next = Number((set[field] + delta).toFixed(1));
+      set[field] = Math.max(0, next);
+      saveState();
+      render();
+    }
+
+    function toggleDone(exIdx, sIdx) {
+      const set = getActiveRoutine().exercises[exIdx].sets[sIdx];
+      set.done = !set.done;
+      saveState();
+      render();
+      if (set.done) {
+        resetTimer(90);
+        startTimer();
+      }
+    }
+
+    function addSet(exIdx) {
+      const sets = getActiveRoutine().exercises[exIdx].sets;
+      const last = sets[sets.length - 1] || { kg: 20, reps: 10, done: false };
+      sets.push({ kg: last.kg, reps: last.reps, done: false });
+      saveState();
+      render();
+    }
+
+    function removeLastSet(exIdx) {
+      const sets = getActiveRoutine().exercises[exIdx].sets;
+      if (sets.length > 1) {
+        sets.pop();
+        saveState();
+        render();
+      }
+    }
+
+    function deleteExercise(exIdx) {
+      getActiveRoutine().exercises.splice(exIdx, 1);
+      saveState();
+      render();
+    }
+
+    function saveNewExercise() {
+      const name = document.getElementById("newExName").value.trim();
+      if (!name) return;
+      const target = document.getElementById("newExTarget").value.trim();
+      const count = Math.max(1, Math.min(10, parseInt(document.getElementById("newExSets").value, 10) || 3));
+      const sets = Array.from({ length: count }, () => ({ kg: 20, reps: 10, done: false }));
+      getActiveRoutine().exercises.push({
+        id: "e_" + Date.now(),
+        name,
+        target,
+        sets
+      });
+      saveState();
+      closeModal("exModal");
+      render();
+    }
+
+    function openNewRoutineModal() {
+      document.getElementById("newRoutineName").value = "";
+      document.getElementById("routineModal").classList.add("open");
+    }
+
+    function saveNewRoutine() {
+      const name = document.getElementById("newRoutineName").value.trim();
+      if (!name) return;
+      const id = "r_" + Date.now();
+      state.routines.push({ id, name, exercises: [] });
+      state.activeRoutineId = id;
+      saveState();
+      closeModal("routineModal");
+      render();
+    }
+
+    function saveWorkoutToHistory() {
+      const routine = getActiveRoutine();
+      const completedSets = routine.exercises.flatMap(ex =>
+        ex.sets.filter(s => s.done).map(s => `${ex.name}: ${s.kg}kg × ${s.reps}`)
+      );
+      const summaryLines = completedSets.length > 0
+        ? completedSets
+        : routine.exercises.flatMap(ex => ex.sets.map(s => `${ex.name}: ${s.kg}kg × ${s.reps}`));
+
+      state.history.unshift({
+        id: "h_" + Date.now(),
+        date: new Date().toLocaleString("it-IT"),
+        routineName: routine.name,
+        lines: summaryLines
+      });
+
+      routine.exercises.forEach(ex => ex.sets.forEach(s => (s.done = false)));
+      saveState();
+      render();
+      alert("Allenamento salvato nello storico!");
+    }
+
+    function openHistory() {
+      const list = document.getElementById("historyList");
+      if (!state.history.length) {
+        list.innerHTML = `<p style="color:var(--muted);">Nessun allenamento salvato ancora.</p>`;
+      } else {
+        list.innerHTML = state.history.map(item => `
+          <div class="history-item">
+            <strong>${escapeHtml(item.routineName)}</strong>
+            <div style="color:var(--muted); font-size:0.78rem;">${escapeHtml(item.date)}</div>
+            <div style="margin-top:4px;">${item.lines.map(l => `<div>• ${escapeHtml(l)}</div>`).join("")}</div>
+          </div>
+        `).join("");
+      }
+      document.getElementById("historyModal").classList.add("open");
+    }
+
+    function openBackupModal() {
+      document.getElementById("backupText").value = JSON.stringify(state, null, 2);
+      document.getElementById("backupModal").classList.add("open");
+    }
+
+    function copyBackup() {
+      const ta = document.getElementById("backupText");
+      ta.select();
+      navigator.clipboard?.writeText(ta.value);
+      alert("Backup copiato!");
+    }
+
+    function restoreBackup() {
+      try {
+        const parsed = JSON.parse(document.getElementById("backupText").value);
+        if (Array.isArray(parsed.routines)) {
+          state = parsed;
+          saveState();
+          closeModal("backupModal");
+          render();
+          alert("Backup ripristinato!");
+        }
+      } catch {
+        alert("Formato non valido.");
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    // Timer recupero
+    function updateTimerDisplay() {
+      const m = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
+      const s = String(timerSeconds % 60).padStart(2, "0");
+      document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      document.getElementById("timerToggleBtn").textContent = "Pausa";
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          updateTimerDisplay();
+        } else {
+          stopTimer();
+          navigator.vibrate?.([200, 100, 200]);
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      document.getElementById("timerToggleBtn").textContent = "Avvia";
+    }
+
+    function toggleTimer() {
+      if (timerInterval) stopTimer();
+      else startTimer();
+    }
+
+    function adjustTimer(delta) {
+      timerSeconds = Math.max(0, timerSeconds + delta);
+      updateTimerDisplay();
+    }
+
+    function resetTimer(sec) {
+      stopTimer();
+      timerSeconds = sec;
+      updateTimerDisplay();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
+    }
+
+    updateTimerDisplay();
+    render();
+  </script>
+</body>
+</html>
